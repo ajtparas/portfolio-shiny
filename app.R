@@ -1,8 +1,8 @@
 # Portfolio Shiny App
 library(shiny)
 library(bslib)
-library(jsonlite)
-library(slickR)
+
+#source("slick.R")
 
 # Define theme for the app
 my_theme <- bs_theme(
@@ -16,6 +16,8 @@ my_theme <- bs_theme(
   heading_font = "Lato",
   font_scale = 1
 )
+
+
 
 projects <- data.frame(
   name = c("Simulating Optimal Roulette Strategies",
@@ -50,26 +52,39 @@ projects <- data.frame(
            ""     
   ))
 
+
 # Define UI
 ui <-
   # slickROutput("box_scores",width='100%',height='200px'),
   
   navbarPage(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", 
+                href = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap")
+    ),
+    
+    # Custom CSS to set fonts for body and headers
+    tags$style(HTML("
+    body {
+      font-family: 'Lato', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Roboto', sans-serif;
+    }
+  ")),
+    
     theme = my_theme,
     
     tags$style(HTML("
-    h1, h2, h3, h4, h5, h6 {
-      font-family: 'Lato', sans-serif !important; 
-      font-weight: bold !important;             
-      color: #333 !important;                 
-      margin-bottom: 20px;                       
-    }
-    body {
-      font-family: 'Roboto', sans-serif !important;
-    }
+    
     .nav-tabs {
       display: flex;
       justify-content: center; /* Center the tabs horizontally */
+    }
+     .navbar-nav li a {
+      font-family: 'Roboto', sans-serif; /* Set font for navbar menu items */
+      font-size: 15px; /* Set font size for navbar menu items */
+      margin: 5 5px;
     }
     .nav-tabs > li {
       margin: 0 10px; /* Add spacing between tabs */
@@ -100,9 +115,6 @@ ui <-
     }
   ")),
     
-
-  
-    
   title = div(
       img(src = "logo_transparent.png", height = "50px", 
           style = "vertical-align: middle;"),
@@ -112,7 +124,13 @@ ui <-
   # Home Tab
   tabPanel(
     title = "Home",
-    style = "font-family: 'Lato';",
+    sidebarLayout(
+    
+    sidebarPanel(
+      "Top Headlines"
+    ),
+    
+    mainPanel(
     fluidPage(
     fluidRow(
       column(12, h1("Aldrich Paras", style = "text-align:center;")),
@@ -141,50 +159,15 @@ ui <-
           tags$li("Machine Learning & Predictive Modeling"),
           tags$li("Data Visualization & Dashboards"),
           tags$li("Statistical Analysis")
-        )
+        ))
       )
     )
-  )),
+  ))),
   
   # About Me Tab
   tabPanel(
-    title = "About Me",
-    fluidRow(
-      column(
-        width = 6,
-        wellPanel(
-          h3("Project 1: Sales Analysis"),
-          p("Interactive dashboard analyzing sales trends."),
-          actionButton("view_project1", "Explore Project")
-        )
-      ),
-      column(
-        width = 6,
-        wellPanel(
-          h3("Project 2: Predictive Modeling"),
-          p("A machine learning model predicting customer churn."),
-          actionButton("view_project2", "Explore Project")
-        )
-      )
-    ),
-    fluidRow(
-      column(
-        width = 6,
-        wellPanel(
-          h3("Project 3: Web Scraping Tool"),
-          p("Automated tool for scraping e-commerce product data."),
-          actionButton("view_project3", "Explore Project")
-        )
-      ),
-      column(
-        width = 6,
-        wellPanel(
-          h3("Project 4: Time Series Forecasting"),
-          p("Forecasting demand using ARIMA and Prophet models."),
-          actionButton("view_project4", "Explore Project")
-        )
-      )
-    )
+    title = "About",
+    fluidRow()
   ),
   
   tabPanel(
@@ -230,7 +213,7 @@ server <- function(input, output, session) {
         "de" = projects[sapply(projects$category, function(x) "Data Engineering" %in% x), ]
     )  
   
-    # Create the grid of cards
+    # grid of cards
     project_cards <- lapply(1:nrow(filtered_projects), function(i) {
       project <- filtered_projects[i, ]
       div(class = "card-container",
@@ -238,7 +221,7 @@ server <- function(input, output, session) {
             div(class = "card",
                 p(project$description)
             )),
-          div(class = "card-title", project$name) # Title below the card
+          div(class = "card-title", project$name) 
       )
     })
     
@@ -258,38 +241,6 @@ server <- function(input, output, session) {
     }
   )
   
-  # Placeholder for project interactivity (update with real content)
-  observeEvent(input$view_project1, {
-    showModal(modalDialog(
-      title = "Sales Analysis",
-      "This is where the project details and interactive content go.",
-      easyClose = TRUE
-    ))
-  })
-  
-  observeEvent(input$view_project2, {
-    showModal(modalDialog(
-      title = "Predictive Modeling",
-      "This is where the project details and interactive content go.",
-      easyClose = TRUE
-    ))
-  })
-  
-  observeEvent(input$view_project3, {
-    showModal(modalDialog(
-      title = "Web Scraping Tool",
-      "This is where the project details and interactive content go.",
-      easyClose = TRUE
-    ))
-  })
-  
-  observeEvent(input$view_project4, {
-    showModal(modalDialog(
-      title = "Time Series Forecasting",
-      "This is where the project details and interactive content go.",
-      easyClose = TRUE
-    ))
-  })
 }
 
 # Run the Shiny app
